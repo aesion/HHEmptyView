@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -49,6 +50,15 @@ public class HHEmptyView extends RelativeLayout implements View.OnClickListener 
 
     private OnBtnClickListener onBtnClickListener;
 
+    private HHProgressAlertDialog mProgressDialog;
+
+    private int mLoadingModel = MODEL_DEFAULT;
+
+    //默认模式
+    public static final int MODEL_DEFAULT = 1;
+    //弹出框模式
+    public static final int MODEL_ALERT = 2;
+
     public HHEmptyView(Context context) {
         super(context);
     }
@@ -82,24 +92,31 @@ public class HHEmptyView extends RelativeLayout implements View.OnClickListener 
             mLoadingText = "加载中...";
         }
 
-        mWarnView = new TextView(getContext());
-        mWarnView.setText(mWarnText);
-        mWarnView.setTextSize(15);
-        LayoutParams mWarnLp = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        mWarnLp.addRule(RelativeLayout.CENTER_IN_PARENT);
-        mWarnView.setId(R.id.id_hh_empty_tv_view);
-        addView(mWarnView,mWarnLp);
-
         mLoadDataBtn = new Button(getContext());
         mLoadDataBtn.setText(buttonText);
         mLoadDataBtn.setTextSize(15);
         LayoutParams mLoadingDataLp = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         mLoadingDataLp.addRule(RelativeLayout.CENTER_IN_PARENT);
-        mLoadingDataLp.addRule(RelativeLayout.BELOW, R.id.id_hh_empty_tv_view);
+//        mLoadingDataLp.addRule(RelativeLayout.BELOW, R.id.id_hh_empty_tv_view);
         mLoadDataBtn.setId(R.id.id_hh_empty_btn_view);
         addView(mLoadDataBtn, mLoadingDataLp);
 
+        mWarnView = new TextView(getContext());
+        mWarnView.setText(mWarnText);
+        mWarnView.setTextSize(15);
+        LayoutParams mWarnLp = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        mWarnLp.addRule(RelativeLayout.CENTER_IN_PARENT);
+        mWarnLp.addRule(RelativeLayout.ABOVE, R.id.id_hh_empty_btn_view);
+        mWarnView.setId(R.id.id_hh_empty_tv_view);
+        addView(mWarnView,mWarnLp);
+
+
+
+        mProgressDialog = new HHProgressAlertDialog(getContext());
+
         mLoadDataBtn.setOnClickListener(this);
+
+        setVisibility(GONE);
     }
 
     /**
@@ -109,26 +126,39 @@ public class HHEmptyView extends RelativeLayout implements View.OnClickListener 
         if(mBindView!=null){
             mBindView.setVisibility(GONE);
         }
-        setVisibility(VISIBLE);
-        mLoadDataBtn.setVisibility(INVISIBLE);
-        if(!hasCustomLoadingView) {
-            mWarnView.setText(mLoadingText);
-        }else{
-            if(mCustomLoadingView!=null){
-                mWarnView.setVisibility(GONE);
-                mCustomLoadingView.setVisibility(VISIBLE);
+        if(mLoadingModel == MODEL_DEFAULT){
+            setVisibility(VISIBLE);
+            mLoadDataBtn.setVisibility(INVISIBLE);
+            if(!hasCustomLoadingView) {
+                mWarnView.setText(mLoadingText);
+            }else{
+                if(mCustomLoadingView!=null){
+                    mWarnView.setVisibility(GONE);
+                    mCustomLoadingView.setVisibility(VISIBLE);
+                }
             }
+        }else if(mLoadingModel == MODEL_ALERT){
+            setVisibility(GONE);
+            mProgressDialog.setCancelable(false);
+            mProgressDialog.show();
         }
+
     }
 
     /**
      * 加载成功
      */
     public void success(){
+
         if(mBindView!=null){
             mBindView.setVisibility(VISIBLE);
         }
+        if(mLoadingModel == MODEL_ALERT){
+            mProgressDialog.cancel();
+        }
         setVisibility(GONE);
+
+
     }
 
     /**
@@ -148,11 +178,16 @@ public class HHEmptyView extends RelativeLayout implements View.OnClickListener 
             mWarnText = msg;
         }
 
+        if(mLoadingModel == MODEL_ALERT){
+            mProgressDialog.cancel();
+        }
+
         if(mBindView!=null){
             mBindView.setVisibility(GONE);
         }
         setVisibility(VISIBLE);
         mLoadDataBtn.setVisibility(VISIBLE);
+
         if(!hasCustomLoadingView){
             mWarnView.setText(mWarnText);
         }else{
@@ -162,6 +197,7 @@ public class HHEmptyView extends RelativeLayout implements View.OnClickListener 
                 mCustomLoadingView.setVisibility(GONE);
             }
         }
+
     }
 
     /**
@@ -202,6 +238,22 @@ public class HHEmptyView extends RelativeLayout implements View.OnClickListener 
             addView(view, params);
             invalidate();
         }
+    }
+
+    /**
+     * 设置弹出框模式加载中文字
+     * @param loadingText
+     */
+    public void setLoadingText(String loadingText) {
+        if(!TextUtils.isEmpty(loadingText)){
+            if(mProgressDialog!=null){
+//                mProgressDialog.setLoadingText(loadingText);
+            }
+        }
+    }
+
+    public void setLoadingModel(int model){
+        this.mLoadingModel = model;
     }
 
     public interface OnBtnClickListener{

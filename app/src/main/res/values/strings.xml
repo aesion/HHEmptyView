@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">HHEmptyView</string>
+    <string name="default_progressbar">Default Progressbar:</string>
 </resources>
