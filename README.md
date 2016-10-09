@@ -3,6 +3,8 @@ android 网络加载提示进度封装View。包含加载中、加载失败、�
 # Preview
  ![image](https://github.com/hcs-xph/HHEmptyView/blob/master/screen/Screenshot_2016-09-18-17-35-39.png)
  ![image](https://github.com/hcs-xph/HHEmptyView/blob/master/screen/Screenshot_2016-09-18-17-35-48.png)
+ 
+ 感谢[materialish-progress](https://github.com/pnikosis/materialish-progress) 和 [Sweet Alert Dialog](https://github.com/pedant/sweet-alert-dialog)项目。
 # Usage xml
 ```java  
 <com.mph.hhemptyview.widget.HHEmptyView
