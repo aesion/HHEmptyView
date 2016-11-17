@@ -73,4 +73,9 @@ public class MainActivity extends AppCompatActivity implements HHEmptyView.OnBtn
     public void onClick(View v) {
 
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
 }
